@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MVC75NET.Models
+namespace APi.Models
 {
     [Table("tb_m_roles")]
     public class Role

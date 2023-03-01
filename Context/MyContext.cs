@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MVC75NET.Models;
+using APi.Models;
+using System;
 
 namespace APi.Context
 {
@@ -37,8 +38,24 @@ namespace APi.Context
                     .HasOne(e => e.Account)
                     .WithOne(a => a.Employee)
                     .HasForeignKey<Account>(fk => fk.EmployeeNIK);
-        }
+            //Buat relasi banyak employee ke 1 manager 
+            modelBuilder.Entity<Employee>().HasOne(e => e.Managers).WithMany(e => e.Employees)
+                .HasForeignKey(fk => fk.ManagerId)
+                .OnDelete(DeleteBehavior.NoAction);
 
-        //Buat relasi banyak employee ke 1 manager 
+            //menambahkan data secara default ke tabel 
+            modelBuilder.Entity<Role>().HasData(
+                new Role
+                {
+                    Id = 1,
+                    Name = "Admin"
+                },
+                
+                new Role
+                {
+                    Id = 2,
+                    Name = "User"
+                });
+        }
     }
 }

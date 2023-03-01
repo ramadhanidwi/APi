@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MVC75NET.Models;
+namespace APi.Models;
 
 [Table("tb_m_employees")]   //Data Anotasi yaitu pake kurung [ ]
     public class Employee
@@ -30,12 +30,19 @@ namespace MVC75NET.Models;
         [Column("phone_number"), MaxLength(20)]
         public string? PhoneNumber { get; set; }
 
+        [Column("manager_id", TypeName = "nchar(5)")]
+        public string? ManagerId{ get; set; }
+
 
     //Cardinality
     public ICollection<Profiling>? Profilings { get; set; }
 
     public Account? Account { get; set; }
-    }
+    
+    public ICollection<Employee>? Employees { get; set; }
+
+    public Employee? Managers { get; set; }
+}
 public enum GenderEnum
 {
     Male,

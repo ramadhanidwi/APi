@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
-namespace MVC75NET.Models;
+namespace APi.Models;
 [Table("tb_m_universities")]
     public class University
     {
@@ -12,6 +13,7 @@ namespace MVC75NET.Models;
         public string Name { get; set; }
 
     //Cardinality
+    [JsonIgnore]
     public ICollection<Education>? Educations { get; set; } //kalo pake ICollection gini berarti many 
 }
 

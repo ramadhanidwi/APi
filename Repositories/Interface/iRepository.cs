@@ -1,20 +1,20 @@
-﻿namespace MVC75NET.Repositories.Interface
+﻿namespace APi.Repositories.Interface
 {
-interface iRepository <Key, Entity> where Entity : class
+    public interface iRepository<Key, Entity> where Entity : class 
     {
         //Get All
-        List<Entity> GetAll();
+        Task<IEnumerable<Entity>> GetAll(); //Method Asynchronus dengan tipe non void, IEnumerable biar datanya hanya readonly 
 
         //Get By Id 
-        Entity GetById(Key key);
+        Task<Entity?> GetById(Key? key);
 
         //Insert 
-        int Insert (Entity entity);
+        Task<int> Insert(Entity entity);
 
         //Update 
-        int Update (Entity entity);
+        Task<int> Update(Entity entity);
 
         //Delete 
-        int Delete (Key key);
+        Task<int> Delete(Key key);
     }
 }

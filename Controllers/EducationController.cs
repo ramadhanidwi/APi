@@ -1,142 +1,172 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using APi.Models;
+using APi.Repositories.Data;
+using APi.Repositories.Interface;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using MVC75NET.Contexts;
-using MVC75NET.Models;
-using MVC75NET.Repositories;
-using MVC75NET.ViewModels;
-using System.Data;
 
-namespace MVC75NET.Controllers
+namespace APi.Controllers
 {
-    public class EducationController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class EducationController : ControllerBase
     {
-        private readonly MyContext context;
         private readonly EducationRepository eduRepository;
-        private readonly UniversityRepository universityRepository;
 
-        public EducationController(MyContext context, EducationRepository eduRepository, UniversityRepository universityRepository)
+        public EducationController(EducationRepository eduRepository)
         {
-            this.context = context;
             this.eduRepository = eduRepository;
-            this.universityRepository = universityRepository;
         }
 
-        [Authorize(Roles = "Admin,User")]
-        public IActionResult Index() //melakukan penjoinan pada tabel education dan
-                                     //university menggunakan join method syntax 
+        //Get
+        [HttpGet]
+        public async Task<ActionResult> GetAll()
         {
-            var results = eduRepository.GetEducationUniversities();
-            return View(results);
-        }
-
-        [Authorize(Roles = "Admin,User")]
-        public IActionResult Details(int id)
-        {
-            return View(eduRepository.GetEduUnivById(id));
-        }
-
-        [Authorize(Roles = "Admin")]
-        public IActionResult Create()
-        {
-            var universities = universityRepository.GetAll()
-            .Select(u => new SelectListItem //buat menampilkan nama dari univ nya saja
+            var result = await eduRepository.GetAll();
+            if (result is null)
             {
-                Value = u.Id.ToString(),
-                Text = u.Name
-            });
-            ViewBag.UniversityId = universities;
-            return View();
-        }
-
-        [Authorize(Roles = "Admin")]
-        public IActionResult Edit(int id)
-        {
-            var universities = universityRepository.GetAll()
-            .Select(u => new SelectListItem
-            {
-                Value = u.Id.ToString(),
-                Text = u.Name
-            });
-            ViewBag.UniversityId = universities;
-
-            var educations = eduRepository.GetById(id);
-            return View(new EducationUnivVM
-            {
-                Id = educations.Id,
-                Degree = educations.Degree,
-                Gpa = educations.Gpa,
-                Major = educations.Major,
-                UniversityName = context.Universities.Find(educations.UniversityId).Name
-            });
-        }
-
-        [Authorize(Roles = "Admin")]
-        public IActionResult Delete(int id)
-        {
-            var educations = context.Educations.Find(id);
-            return View(new EducationUnivVM
-            {
-                Id = educations.Id,
-                Degree = educations.Degree,
-                Gpa = educations.Gpa,
-                Major = educations.Major,
-                UniversityName = context.Universities.Find(educations.UniversityId).Name
-            }) ; 
-        }
-
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(EducationUnivVM education) // Melakukan Mapping ulang agar data yang dimasukanke dalam 
-                                                           // database merupakan data original table university 
-        {
-            var result = eduRepository.Insert(
-                new Education{
-                Id = education.Id,
-                Degree = education.Degree,
-                Gpa = education.Gpa,
-                Major = education.Major, 
-                UniversityId = Convert.ToInt16(education.UniversityName)
-            });
-            if (result > 0)
-                return RedirectToAction(nameof(Index));
-            return View();
-        }
-
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(EducationUnivVM education)
-        {
-            var result = eduRepository.Update(new Education
-            {
-                Id = education.Id,
-                Degree = education.Degree,
-                Gpa = education.Gpa,
-                Major = education.Major,
-                UniversityId =Convert.ToInt32(education.UniversityName)
-            }); 
-
-            if (result > 0)
-            {
-                return RedirectToAction(nameof(Index));
+                return Ok(new
+                {
+                    StatusCode = 200,
+                    Message = "Data Kosong!"
+                });
             }
-            return View();
+            else
+            {
+                return Ok(new
+                {
+                    StatusCode = 200,
+                    Message = "Data Ada",
+                    Data = result
+                });
+            }
         }
 
-        [Authorize(Roles = "Admin")]
+        //Insert 
+        //Post
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Remove(int id)
+        public async Task<ActionResult> Insert(Education entity)
         {
-            var result = eduRepository.Delete(id);
-            if (result > 0)
+            try
             {
-                return RedirectToAction(nameof(Index));
+                var results = await eduRepository.Insert(entity);
+                if (results == 0)
+                {
+                    return BadRequest(new
+                    {
+                        StatusCode = 400,
+                        Message = "Data Gagal Disimpan"
+                    });
+                }
+                else
+                {
+                    return Ok(new
+                    {
+                        StatusCode = 200,
+                        Message = "Data Berhasil Disimpan!"
+                    });
+                }
             }
-            return View();
+            catch
+            {
+                return BadRequest(new
+                {
+                    StatusCode = 500,
+                    Message = "Something Wrong! + "
+                });
+            }
+        }
+
+        //Update 
+        [HttpPut]
+        public async Task<ActionResult> Update(Education entity)
+        {
+            try
+            {
+                var results = await eduRepository.Update(entity);
+                if (results == 0)
+                {
+                    return BadRequest(new
+                    {
+                        StatusCode = 400,
+                        Message = "Data Gagal Diupdate"
+                    });
+                }
+                else
+                {
+                    return Ok(new
+                    {
+                        StatusCode = 200,
+                        Message = "Data Berhasil Diupdate!"
+                    });
+                }
+            }
+            catch
+            {
+                return BadRequest(new
+                {
+                    StatusCode = 500,
+                    Message = "Something Wrong! + "
+                });
+            }
+        }
+
+        ////Delete
+        [HttpDelete]
+        public async Task<ActionResult> Delete(int id)
+        {
+            try
+            {
+                var results = await eduRepository.Delete(id);
+                if (results == 0)
+                {
+                    return BadRequest(new
+                    {
+                        StatusCode = 400,
+                        Message = "Data Gagal Disimpan"
+                    });
+                }
+                else
+                {
+                    return Ok(new
+                    {
+                        StatusCode = 200,
+                        Message = "Data Berhasil Disimpan!"
+                    });
+                }
+            }
+            catch
+            {
+                return BadRequest(new
+                {
+                    StatusCode = 500,
+                    Message = "Something Wrong! + "
+                });
+            }
+        }
+
+        //GetByID
+        [HttpGet]
+        [Route("{key}")]
+        public async Task<ActionResult> GetById(int key)
+        {
+            var result = await eduRepository.GetById(key);
+            if (result is null)
+            {
+                return Ok(new
+                {
+                    StatusCode = 200,
+                    Message = "Data Kosong!"
+                });
+            }
+            else
+            {
+                return Ok(new
+                {
+                    StatusCode = 200,
+                    Message = "Data Ada",
+                    Data = result
+                });
+            }
         }
     }
 }

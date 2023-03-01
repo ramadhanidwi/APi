@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
-namespace MVC75NET.Models
+namespace APi.Models
 {
     [Table("tb_m_educations")]
     public class Education
@@ -21,10 +22,13 @@ namespace MVC75NET.Models
         [Required, Column("university_id")]
         public int UniversityId { get; set; }
 
+
         //Cardinality and Relations 
+        [JsonIgnore]
         [ForeignKey("UniversityId")]
-        public University University { get; set; } //Kalo dibuat objek gini maka one 
-        
+        public University? University { get; set; } //Kalo dibuat objek gini maka one 
+
+        [JsonIgnore]
         public ICollection<Profiling>? Profilings { get; set; }
     }
 
