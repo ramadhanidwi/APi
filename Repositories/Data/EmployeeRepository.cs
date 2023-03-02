@@ -1,5 +1,6 @@
 ﻿using APi.Context;
 using APi.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace APi.Repositories.Data
 {

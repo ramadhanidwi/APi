@@ -63,8 +63,6 @@ namespace APi.Controllers
             try
             {
                 var results = await accRepository.Login(loginVM);
-
-
                 if (results is false)
                 {
                     return Conflict(new { statusCode = 409, message = "Account Or Password Does not Match !" });
@@ -97,11 +95,11 @@ namespace APi.Controllers
                         );
 
                     //Menggenerate pembuatan tokennya 
-                    var generateToken = new JwtSecurityTokenHandler().WriteToken(token);
+                    var generatedToken = new JwtSecurityTokenHandler().WriteToken(token);
                     return Ok(new
                     {
                         StatusCode = 200,
-                        Message = "Login Success!", data = generateToken
+                        Message = "Login Success!", data = generatedToken
                     });
                 }
             }

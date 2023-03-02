@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace APi.Models;
 
@@ -35,12 +36,16 @@ namespace APi.Models;
 
 
     //Cardinality
+    [JsonIgnore]
     public ICollection<Profiling>? Profilings { get; set; }
 
+    [JsonIgnore]
     public Account? Account { get; set; }
-    
+
+    [JsonIgnore]
     public ICollection<Employee>? Employees { get; set; }
 
+    [JsonIgnore]
     public Employee? Managers { get; set; }
 }
 public enum GenderEnum
