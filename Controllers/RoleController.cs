@@ -7,20 +7,20 @@ namespace APi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployeeController : ControllerBase
+    public class RoleController : ControllerBase
     {
-        private readonly EmployeeRepository empRepository;
+        private readonly RoleRepository roleRepository;
 
-        public EmployeeController(EmployeeRepository empRepository)
+        public RoleController(RoleRepository roleRepository)
         {
-            this.empRepository = empRepository;
+            this.roleRepository = roleRepository;
         }
 
-        //Read / get 
+        //Get All/ read 
         [HttpGet]
         public async Task<ActionResult> GetAll()
         {
-            var result = await empRepository.GetAll();
+            var result = await roleRepository.GetAll();
             if (result is null)
             {
                 return NotFound(new
@@ -42,11 +42,11 @@ namespace APi.Controllers
 
         //Create / Insert 
         [HttpPost]
-        public async Task<ActionResult> Insert(Employee entity)
+        public async Task<ActionResult> Insert(Role entity)
         {
             try
             {
-                var results = await empRepository.Insert(entity);
+                var results = await roleRepository.Insert(entity);
                 if (results == 0)
                 {
                     return BadRequest(new
@@ -74,13 +74,14 @@ namespace APi.Controllers
             }
         }
 
+        //Update
         //Update / Edit 
         [HttpPut]
-        public async Task<ActionResult> Update(Employee entity)
+        public async Task<ActionResult> Update(Role entity)
         {
             try
             {
-                var results = await empRepository.Update(entity);
+                var results = await roleRepository.Update(entity);
                 if (results == 0)
                 {
                     return BadRequest(new
@@ -110,11 +111,11 @@ namespace APi.Controllers
 
         //Delete 
         [HttpDelete]
-        public async Task<ActionResult> Delete(string id)
+        public async Task<ActionResult> Delete(int id)
         {
             try
             {
-                var results = await empRepository.Delete(id);
+                var results = await roleRepository.Delete(id);
                 if (results == 0)
                 {
                     return BadRequest(new
@@ -144,9 +145,9 @@ namespace APi.Controllers
 
         //GetById
         [HttpGet("{key}")]
-        public async Task<ActionResult> GetById(string key)
+        public async Task<ActionResult> GetById(int key)
         {
-            var result = await empRepository.GetById(key);
+            var result = await roleRepository.GetById(key);
             if (result is null)
             {
                 return Ok(new
@@ -165,5 +166,6 @@ namespace APi.Controllers
                 });
             }
         }
+
     }
 }
