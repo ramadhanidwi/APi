@@ -1,4 +1,6 @@
-﻿using APi.Repositories.Data;
+﻿using APi.Base;
+using APi.Models;
+using APi.Repositories.Data;
 using APi.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +14,12 @@ namespace APi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController : ControllerBase
+    public class AccountController : BaseController<string, Account, AccountRepository>
     {
         private readonly AccountRepository accRepository;
         private readonly IConfiguration configuration;
 
-        public AccountController(AccountRepository accRepository, IConfiguration configuration)
+        public AccountController(AccountRepository accRepository, IConfiguration configuration) : base(repository)
         {
             this.accRepository = accRepository;
             this.configuration = configuration;
