@@ -1,20 +1,19 @@
-﻿namespace APi.Repositories.Interface
+﻿namespace APi.Repositories.Interface;
+
+public interface iRepository<Key, Entity> where Entity : class 
 {
-    public interface iRepository<Key, Entity> where Entity : class 
-    {
-        //Get All
-        Task<IEnumerable<Entity>> GetAll(); //Method Asynchronus dengan tipe non void, IEnumerable biar datanya hanya readonly 
+    //Get All
+    Task<IEnumerable<Entity>> GetAll(); //Method Asynchronus dengan tipe non void, IEnumerable biar datanya hanya readonly 
 
-        //Get By Id 
-        Task<Entity?> GetById(Key? key);
+    //Get By Id 
+    Task<Entity?> GetById(Key? key);
 
-        //Insert 
-        Task<int> Insert(Entity entity);
+    //Insert 
+    Task<int> Insert(Entity entity);
 
-        //Update 
-        Task<int> Update(Entity entity);
+    //Update 
+    Task<int> Update(Entity entity);
 
-        //Delete 
-        Task<int> Delete(Key key);
-    }
+    //Delete 
+    Task<int> Delete(Key key);
 }

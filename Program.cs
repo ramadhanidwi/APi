@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Net;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,11 +18,9 @@ builder.Services.AddControllers();
 var connectionString = builder.Configuration.GetConnectionString("connection"); //untuk mendapat connection string yang ada di appsettings.json 
 builder.Services.AddDbContext<MyContext>(options => options.UseSqlServer(connectionString)); //untuk mendaftarkan MyContext.cs ke Sql Server 
 
-// Configure Session
-//builder.Services.AddSession(options =>
-//{
-//    options.IdleTimeout = TimeSpan.FromSeconds(10);
-//});
+//// Learn more about configuring Swagger/OpenAPI 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<UniversityRepository>();
 builder.Services.AddScoped<EducationRepository>();
@@ -41,9 +40,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             //Usually, this is application base url
             ValidateAudience = false,   //validasi client nya, audience didapat dari appseting.json, dijadikan true jika ada services nya
-                                        //ValidAudience = builder.Configuration["JWT:Audience"],
+            //ValidAudience = builder.Configuration["JWT:Audience"],
 
-            // If the JWT is created using web service, then this could be the consumer URL
+            //If the JWT is created using web service, then this could be the consumer URL
             ValidateIssuer = false,     //didapat dari appsettings.json 
             //ValidIssuer = builder.Configuration["JWT:Issuer"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"])),
@@ -53,7 +52,51 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(x =>
+{
+    x.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "MCC75 API",
+        Description = "ASP.NET Core API 6.0"
+    });
+
+    x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme."
+    });
+
+    x.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] { }
+                    }
+                });
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.AllowAnyOrigin();
+            policy.AllowAnyHeader();
+            policy.AllowAnyMethod();
+        });
+});
 
 var app = builder.Build();
 
@@ -66,8 +109,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-//app.UseSession();
-
+//Configuration JWT, UNTUK APA ? 
 //app.Use(async (context, next) =>
 //{
 //    var jwtoken = context.Session.GetString("jwtoken");
@@ -77,6 +119,10 @@ app.UseHttpsRedirection();
 //    }
 //    await next();
 //});
+
+app.UseHttpsRedirection();
+
+app.UseCors();
 
 app.UseAuthentication();
 

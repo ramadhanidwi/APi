@@ -5,15 +5,15 @@ using APi.Repositories.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace APi.Controllers
-{
-    [Route("api/[controller]")]
-    [ApiController]
-    public class EducationController : BaseController<int, Education, EducationRepository>
-    {
+namespace APi.Controllers;
 
-        public EducationController(EducationRepository repository) : base(repository)
-        {
-        }
+[Route("api/[controller]")]
+[ApiController]
+//[Authorize]
+public class EducationController : BaseController<int, Education, EducationRepository>
+{
+
+    public EducationController(EducationRepository repository) : base(repository)
+    {
     }
 }
